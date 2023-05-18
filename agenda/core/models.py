@@ -15,3 +15,6 @@ class Event(models.Model):
     def __str__(self):
         return f"event: {self.title} - on {self.event_date}"
 
+    def get_data_event(self):
+        return self.event_date.strftime("%d/%m/%Y %H:%M")
+
