@@ -3,6 +3,9 @@ from core.models import Event
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.utils.dateparse import parse_datetime
+from django.http import HttpResponseBadRequest, HttpResponse
+from datetime import datetime
 
 
 def login_user(request):
@@ -44,9 +47,15 @@ def event(request):
 def submit_event(request):
     if request.POST:
         title = request.POST.get('title'),
+        for pos in title:
+            title = pos
         event_date = request.POST.get('event_date'),
+        for pos in event_date:
+            event_date = pos
         description = request.POST.get('description'),
+        for pos in description:
+            description = pos
         user = request.user
-        Event.objects.create(title=title, event_date=event_date, description=description, user=user)
 
+        Event.objects.create(title=title, event_date=str(event_date), description=description, user=user)
     return redirect('/')

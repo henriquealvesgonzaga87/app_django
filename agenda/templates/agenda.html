@@ -7,7 +7,7 @@
     </a>
     <ul style="font-size: 18px">
         {% for event in events %}
-        <li>{{ event.title }} - {{ event.get_data_event }}</li>
+        <li>{{ event.title }} - {{ event.get_data_event }} - {{ event.description }}</li>
         {% endfor %}
     </ul>
 {% endblock %}
