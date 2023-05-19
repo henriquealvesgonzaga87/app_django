@@ -3,9 +3,6 @@ from core.models import Event
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.utils.dateparse import parse_datetime
-from django.http import HttpResponseBadRequest, HttpResponse
-from datetime import datetime
 
 
 def login_user(request):
@@ -40,7 +37,11 @@ def list_events(request):
 
 @login_required(login_url='/login/')
 def event(request):
-    return render(request, 'event.html')
+    id_event = request.GET.get('id')
+    datas = {}
+    if id_event:
+        datas['event'] = Event.objects.get(id=id_event)
+    return render(request, 'event.html', datas)
 
 
 @login_required(login_url='/login/')
@@ -56,6 +57,25 @@ def submit_event(request):
         for pos in description:
             description = pos
         user = request.user
+        id_event = request.POST.get('id_event')
+        if id_event:
+            event = Event.objects.get(id=id_event)
+            if event.user == user:
+                event.title = title
+                event.description = description
+                event.event_date = event_date
+                event.save()
+            # Event.objects.filter(id=id_event).update(title=title, event_date=str(event_date), description=description)
+        else:
+            Event.objects.create(title=title, event_date=str(event_date), description=description, user=user)
 
-        Event.objects.create(title=title, event_date=str(event_date), description=description, user=user)
+    return redirect('/')
+
+
+@login_required(login_url='/login/')
+def delete_event(request, id_event):
+    user = request.user
+    event = Event.objects.get(id=id_event)
+    if user == event.user:
+        event.delete()
     return redirect('/')
